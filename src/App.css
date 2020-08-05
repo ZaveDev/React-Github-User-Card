@@ -53,6 +53,7 @@ body {
 }
 .followers{
   display: flex;
+  flex-wrap: wrap;
   width: 80%;
   margin-bottom: 12.2%;
 }

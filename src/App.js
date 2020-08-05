@@ -3,8 +3,10 @@ import axios from 'axios'
 
 import UserCard from './components/UserCard'
 import FollowerCard from './components/FollowerCard'
+import AddMe from './components/AddMe'
 
 import './App.css';
+
 
 const data = {
   "avatar_url": "https://avatars1.githubusercontent.com/u/66022270?v=4",
@@ -45,8 +47,10 @@ class App extends React.Component{
   constructor(){
     super();
     this.state = {
-      user: {},
-      followers: []
+      user: [],
+      followers: [],
+      formValue: "",
+      submit: false,
     }
   }
 
@@ -72,10 +76,53 @@ class App extends React.Component{
 
   }
 
+  handleOnChange = e => {
+    let value = e.target.value
+    this.setState({
+      formValue: value 
+    })
+  }
+  
+  handleOnSubmit = e => {
+    e.preventDefault()
+    this.setState({
+      submit: true
+    })
+    // this.addTask(this.state.formValue);
+
+  }
+
+componentDidUpdate(prevProps, prevState,){
+  if (this.state.submit !== prevState.submit){
+    axios
+      .get(`https://api.github.com/users/${this.state.formValue}`)
+      .then(res => {
+        this.setState({
+          user: res.data
+        })
+      })
+      .catch(err => console.log(err));
+      axios
+      .get(`https://api.github.com/users/${this.state.formValue}/followers`)
+      .then(res => {
+        this.setState({
+          followers: res.data
+        })
+      })
+      .catch(err => console.log(err));
+    this.setState({
+      formValue: "",
+      submit:false
+    })
+
+  }
+}
 
   render(){
     return (
       <div className="App">
+      <AddMe handleOnChange={this.handleOnChange} handleOnSubmit={this.handleOnSubmit}/>
+      
         <UserCard user={this.state.user}/>
         <h2>Followers</h2>
         <div className="followers">
